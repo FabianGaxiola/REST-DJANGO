@@ -7,8 +7,8 @@ services:
     ports:
       - "8500:8500"
     environment:
-      - MAILTRAP_USER=e2f7d709fb4653
-      - MAILTRAP_PASSWORD=cff6bdb5f8ac8e
+      - MAILTRAP_USER=Username
+      - MAILTRAP_PASSWORD=Password
     depends_on:
       - db
   db:
