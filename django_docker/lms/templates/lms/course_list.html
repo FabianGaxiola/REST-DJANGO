@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Cursos</title>
+</head>
+<body>
+  <h1>Listado de cursos</h1>
+
+  {% if courses %}
+    <ul>
+      {% for course in courses %}
+        <li>
+          <a href="{% url 'course_detail' course.id %}">
+            {{ course.lesson }}
+          </a>
+          (progreso: {{ course.progress }} %)
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay cursos todavía.</p>
+  {% endif %}
+</body>
+</html>

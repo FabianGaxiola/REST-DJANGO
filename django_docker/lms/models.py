@@ -1,32 +1,47 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
+from django.db import models
 
 
 class Inscription(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='inscriptions')
+    """Equivale a Inscriptions del diagrama"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inscriptions')
 
-
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField(null=True, blank=True)
-    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='comments')
+    def __str__(self):
+        return f"Inscription #{self.id} - {self.user.username}"
 
 
 class Course(models.Model):
-    course_id = models.CharField(max_length=50, primary_key=True)
-    inscription = models.ForeignKey('Inscription', on_delete=models.CASCADE, related_name='courses_inscription')
-    image = models.ImageField(upload_to='courses/')
-    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
+    """Course del diagrama"""
+    inscription = models.ForeignKey(
+        Inscription,
+        on_delete=models.CASCADE,
+        related_name='courses'
+    )
+    image = models.ImageField(upload_to='course_images/', null=True, blank=True)
+    lesson = models.CharField(max_length=255)
     progress = models.FloatField(default=0.0)
-    comment = models.ForeignKey('Comment',on_delete=models.CASCADE,related_name='courses_comment')
-    role = models.CharField(max_length=50, default='Student')
+    comment = models.CharField(max_length=255, blank=True)
+    role = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.lesson
 
 
 class Lesson(models.Model):
+    """Lesson del diagrama"""
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
     unit = models.IntegerField()
-    score = models.FloatField()
+    score = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return f"{self.course.lesson} - Unit {self.unit}"
 
 
+class Comment(models.Model):
+    """Comments del diagrama"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='comments')
+    comment = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.lesson}"

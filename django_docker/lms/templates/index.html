@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,4 +12,8 @@
     <p>This is the homepage of the LMS application.</p>
 </body>
 
-</html>
+</html> -->
+
+{% load socialaccount %}
+
+<a href="{% provider_login_url 'google' %}">Iniciar sesión con Google</a>

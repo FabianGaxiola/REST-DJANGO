@@ -1,41 +1,44 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Inscription, Comment, Course, Lesson
+from rest_framework import serializers
+from .models import Inscription, Course, Lesson, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer for Django User model"""
-    
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_active', 'date_joined']
-        read_only_fields = ['id', 'date_joined']
+        fields = ['id', 'username', 'email', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+        )
+        return user
 
 
 class InscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inscription
-        fields = ['id', 'user', 'course']
+        fields = ['id', 'user']
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['comment_id', 'user', 'comment', 'course']
-
-class LessonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lesson
-        fields = ['id', 'unit', 'score']
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = [
-            'course_id',
-            'inscription',
-            'image',
-            'lesson',
-            'progress',
-            'comment',
-            'role',
-        ]
+        fields = ['id', 'inscription', 'image', 'lesson', 'progress', 'comment', 'role']
+
+
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'course', 'unit', 'score']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'course', 'comment']
